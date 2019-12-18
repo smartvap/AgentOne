@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6.0_45_x64"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="lib/commons-logging-1.0.4.jar"/>
+	<classpathentry kind="lib" path="lib/fastjson-1.2.47.jar"/>
+	<classpathentry kind="lib" path="lib/ganymed-ssh2-build210.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient-4.5.5.jar"/>
+	<classpathentry kind="lib" path="lib/httpcore-4.4.9.jar"/>
+	<classpathentry kind="lib" path="lib/javassist-3.19.0.jar"/>
+	<classpathentry kind="lib" path="lib/joda-time-2.10.5.jar"/>
+	<classpathentry kind="lib" path="lib/bcprov-jdk15on-1.59.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang3-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/catalina.jar"/>
+	<classpathentry kind="lib" path="lib/sigar.jar"/>
+	<classpathentry kind="lib" path="lib/jna-4.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat-coyote.jar"/>
+	<classpathentry kind="lib" path="lib/javax.servlet_3.0.0.v201112011016.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
