@@ -5,6 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import ch.ethz.ssh2.Connection;
 
+@SuppressWarnings("unused")
 public class BigipUtil {
 	private static final Log log = LogFactory.getLog(BigipUtil.class);
 	private static String serverIP = "10.19.194.134"; // The remote server IP
