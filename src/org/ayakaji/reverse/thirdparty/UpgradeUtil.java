@@ -1,3 +1,6 @@
+/****************************************
+ * This source file will not be used!!! *
+ ****************************************/
 package org.ayakaji.reverse.thirdparty;
 
 import java.io.File;
@@ -12,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.SCPClient;
 
+@SuppressWarnings("unused")
 public class UpgradeUtil {
 	private static final Log log = LogFactory.getLog(UpgradeUtil.class);
 
@@ -420,7 +424,7 @@ public class UpgradeUtil {
 		SshUtil.execCommand(conn,
 				"du -s -b " + (String) srvInfo.get("appHome") + "/" + earName + ".tar.gz | awk '{print $1}'");
 		SCPClient client = new SCPClient(conn);
-		client.get(srvInfo.get("appHome") + "/" + earName + ".tar.gz", "dist");
+		client.get(srvInfo.get("appHome") + "/" + earName + ".tar.gz");
 		log.info("Local file size: " + new File("dist/" + earName + ".tar.gz").length());
 		conn.close();
 		log.info(srvInfo.get("srvAddr") + ":" + srvInfo.get("appHome") + "/" + earName
@@ -438,7 +442,7 @@ public class UpgradeUtil {
 		Connection conn = SshUtil.getConnection((String) isoSrv.get("srvAddr"), (Integer) isoSrv.get("srvPort"),
 				(String) isoSrv.get("account"), (String) isoSrv.get("password"));
 		SCPClient client = new SCPClient(conn);
-		client.put("dist/" + earName + ".tar.gz", (String) isoSrv.get("appHome"));
+//		client.put("dist/" + earName + ".tar.gz", (String) isoSrv.get("appHome"));
 		log.info("Local file size: " + new File("dist/" + earName + ".tar.gz").length());
 		log.info("Remote file size: ");
 		SshUtil.execCommand(conn,
@@ -447,9 +451,10 @@ public class UpgradeUtil {
 		log.info("dist/" + earName + ".tar.gz has been uploaded to " + isoSrv.get("srvAddr") + ":"
 				+ isoSrv.get("appHome"));
 	}
-	
+
 	/**
 	 * Upload the package to destination path
+	 * 
 	 * @param earName
 	 * @param dstPath
 	 * @throws IOException
@@ -459,14 +464,12 @@ public class UpgradeUtil {
 		Connection conn = SshUtil.getConnection((String) isoSrv.get("srvAddr"), (Integer) isoSrv.get("srvPort"),
 				(String) isoSrv.get("account"), (String) isoSrv.get("password"));
 		SCPClient client = new SCPClient(conn);
-		client.put("dist/" + earName + ".tar.gz", dstPath);
+//		client.put("dist/" + earName + ".tar.gz", dstPath);
 		log.info("Local file size: " + new File("dist/" + earName + ".tar.gz").length());
 		log.info("Remote file size: ");
-		SshUtil.execCommand(conn,
-				"du -s -b " + dstPath + "/" + earName + ".tar.gz | awk '{print $1}'");
+		SshUtil.execCommand(conn, "du -s -b " + dstPath + "/" + earName + ".tar.gz | awk '{print $1}'");
 		conn.close();
-		log.info("dist/" + earName + ".tar.gz has been uploaded to " + isoSrv.get("srvAddr") + ":"
-				+ dstPath);
+		log.info("dist/" + earName + ".tar.gz has been uploaded to " + isoSrv.get("srvAddr") + ":" + dstPath);
 	}
 
 	/**
@@ -511,9 +514,9 @@ public class UpgradeUtil {
 		conn.close();
 		log.info((String) isoSrv.get("appHome") + "/" + earName + ".tar.gz has been decompressed.");
 	}
-	
+
 	/**
-	 * Decompress 
+	 * Decompress
 	 * 
 	 * @param earName
 	 * @param dstPath
@@ -541,7 +544,7 @@ public class UpgradeUtil {
 		conn.close();
 		log.info((String) isoSrv.get("appHome") + "/" + earName + ".tar.gz has been cleared.");
 	}
-	
+
 	private static void cleanupRemote(String earName, String dstPath) throws IOException, InterruptedException {
 		Connection conn = SshUtil.getConnection((String) isoSrv.get("srvAddr"), (Integer) isoSrv.get("srvPort"),
 				(String) isoSrv.get("account"), (String) isoSrv.get("password"));
@@ -549,12 +552,12 @@ public class UpgradeUtil {
 		conn.close();
 		log.info(dstPath + "/" + earName + ".tar.gz has been cleared.");
 	}
-	
+
 	/**
 	 * Reload shmprm
 	 */
 	private static void reloadShm() {
-		
+
 	}
 
 	/**
@@ -574,7 +577,7 @@ public class UpgradeUtil {
 		decompress(earName);
 		cleanupRemote(earName);
 	}
-	
+
 	/**
 	 * Auto deploy the ear to isolated environment (variant), overlay installation
 	 * 
@@ -600,13 +603,10 @@ public class UpgradeUtil {
 //		deploy("shmprm", (String) shmSrv.get("appHome"));
 		Connection conn = SshUtil.getConnection((String) isoSrv.get("srvAddr"), (Integer) isoSrv.get("srvPort"),
 				(String) isoSrv.get("account"), (String) isoSrv.get("password"));
-		SshUtil.execCommand(conn, "su - shmprm <<!\n"
-				+ "ps -ef | grep dbc_loader | grep -v grep | awk '{print $2}' | xargs kill -9\n"
-				+ "ipcrm -M 0x12345680\n"
-				+ "ipcrm -M 0x4100ccf2\n"
-				+ "./load-brfshm.sh\n"
-				+ "./load.sh\n"
-				+ "!");
+		SshUtil.execCommand(conn,
+				"su - shmprm <<!\n" + "ps -ef | grep dbc_loader | grep -v grep | awk '{print $2}' | xargs kill -9\n"
+						+ "ipcrm -M 0x12345680\n" + "ipcrm -M 0x4100ccf2\n" + "./load-brfshm.sh\n" + "./load.sh\n"
+						+ "!");
 		conn.close();
 	}
 }

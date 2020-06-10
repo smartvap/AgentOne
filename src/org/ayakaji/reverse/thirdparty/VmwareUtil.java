@@ -12,6 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import ch.ethz.ssh2.Connection;
 import ch.ethz.ssh2.SCPClient;
 
+@SuppressWarnings("unused")
 public class VmwareUtil {
 	private static final Log log = LogFactory.getLog(VmwareUtil.class);
 	private static final String serverIP = "10.19.240.33";
@@ -33,7 +34,7 @@ public class VmwareUtil {
 	private static void initBaiduPCS() throws IOException, InterruptedException {
 		Connection conn = SshUtil.getConnection(serverIP, serverPort, account, password);
 		SCPClient client = new SCPClient(conn);
-		client.put(localBaiduPCSPath + "/" + baiduPCSPackage, remoteBaiduPCSPath);
+//		client.put(localBaiduPCSPath + "/" + baiduPCSPackage, remoteBaiduPCSPath);
 		SshUtil.execCommand(conn, "cd " + remoteBaiduPCSPath + "; unzip " + baiduPCSPackage);
 		SshUtil.execCommand(conn, "ln -s " + remoteBaiduPCSPath + "/" + baiduPCSExePath + " " + baiduPCSSoftLink);
 		conn.close();
