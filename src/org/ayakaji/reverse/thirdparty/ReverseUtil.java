@@ -1,7 +1,8 @@
 /******************************
- * AgentOne Reverse Utility   *
+ * AgentOne Devops Utility    *
  * Used For Agent Package     *
  * And thirdparty jar replace *
+ * WebSphere Environment      *
  *****************************/
 package org.ayakaji.reverse.thirdparty;
 
@@ -134,7 +135,7 @@ public class ReverseUtil {
 			System.exit(0);
 		}
 		SCPClient scp = new SCPClient(conn);
-		scp.put(localAgentPath, serverTempPath);
+		scp.put(file.getName(), file.length(), serverTempPath, "0644");
 		log.info("Successfully uploaded " + localAgentPath + " ...");
 		execCommand(conn, "ls -ltr " + serverTempPath + "/" + file.getName());
 		log.info("Local File Size: " + file.length());
