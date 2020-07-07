@@ -71,14 +71,30 @@ public class IngressUemUpdate {
 			+ "\t\t# Inject Agents in each page\n"
 			+ "\t\tsub_filter_types *;\n"
 			+ "\t\tsub_filter \"</body>\" \"<script type='text/javascript' src='/uem/uem-err-1.5.js'></script></body>\";\n"
-			+ "\t\tsub_filter \"<head>\" \"<head><script type='text/javascript' src='/uem/uem-jserr-1.5.js'></script>\";\n"
+			// + "\t\tsub_filter \"<head>\" \"<head><script type='text/javascript' src='/uem/uem-jserr-1.5.js'></script>\";\n"
+			+ "\t\tsub_filter \"debugger;\" \"\";\n"
 			+ "\t\tsub_filter_once off;\n"
+			+ "\t\t\n"
+			+ "\t\t# openchannel policies\n"
+			+ "\t\tlocation /openchannel {\n"
+			+ "\t\t\tproxy_pass http://192.195.250.56/openchannel;\n"
+			+ "\t\t}\n"
 			+ "\t\t\n"
 			+ "\t\t##########################\n"
 			+ "\t\t# UEM 1.5 Configurations #\n"
 			+ "\t\t# End                    #\n"
 			+ "\t\t##########################\n";
+	private static String Ngx_Err_Map_Cnf =
+			"\n\t\tmap $status $if_err {\n"
+			+ "\t\t\t~^[23]  0;\n"
+			+ "\t\t\tdefault 1;\n"
+			+ "\t\t}\n"
+			+ "\t\t\n"
+			+ "\t\tlog_format log_json '{ \"@timestamp\": \"$time_local\", \"remote_addr\": \"$remote_addr\", \"referer\": \"$http_referer\", \"request\": \"$request\", \"status\": $status, \"bytes\": $body_bytes_sent, \"agent\": \"$http_user_agent\", \"x_forwarded\": \"$http_x_forwarded_for\", \"up_addr\": \"$upstream_addr\", \"up_host\": \"$upstream_http_host\", \"up_resp_time\": \"$upstream_response_time\", \"request_time\": \"$request_time\" }';\n"
+			+ "\t\t\n"
+			+ "\t\taccess_log syslog:server=192.168.1.1:9514,facility=local7,tag=ngx_err,severity=info log_json if=$if_err;\n";
 	private static String Mrk_Err_Page = "error_page 404 /uem/4xx.html;";
+	private static String Mrk_Err_Map = "map $status $if_err {";
 
 	static {
 		try {
@@ -153,36 +169,42 @@ public class IngressUemUpdate {
 					.lastIndexOf("\n");
 			merge(Ngx_Ing_Conf_Full_Path, pos, Mrk_Err_Page);
 		}
-		// 6、上传合并后的配置文件到Master节点中转目录
+		// 6、检查并添加access_log过滤器map配置、log_format配置、access_log配置
+		sNgxCnf = read(Ngx_Ing_Conf_Full_Path);
+		if (sNgxCnf.indexOf(Mrk_Err_Map) == -1) {
+			int pos = sNgxCnf.substring(0, sNgxCnf.indexOf("map $request_uri $loggable {")).lastIndexOf("\n");
+			merge(Ngx_Ing_Conf_Full_Path, pos, Ngx_Err_Map_Cnf);
+		}
+		// 7、上传合并后的配置文件到Master节点中转目录
 		SshUtil.upload(conn, Ngx_Ing_Conf_Full_Path, K8s_Master_Trans_Folder);
-		// 7、上传UEM代理到Master节点中转目录
+		// 8、上传UEM代理到Master节点中转目录
 		SshUtil.upload(conn, Uem_Err_Src_Full_Path, K8s_Master_Trans_Folder);
 		SshUtil.upload(conn, Uem_JS_Err_Full_Path, K8s_Master_Trans_Folder);
-		// 8、上传json2依赖到Master节点中转目录
+		// 9、上传json2依赖到Master节点中转目录
 		SshUtil.upload(conn, Json2_Src_Full_Path, K8s_Master_Trans_Folder);
-		// 9、上传默认4xx.html到Master节点中转目录
+		// 10、上传默认4xx.html到Master节点中转目录
 		SshUtil.upload(conn, Fourxx_Zip_Full_path, K8s_Master_Trans_Folder);
-		// 10、拷贝Nginx Ingress配置文件到容器内
+		// 11、拷贝Nginx Ingress配置文件到容器内
 		SshUtil.execCommand(conn, Push_Ngx_Ing_Conf);
-		// 11、无条件创建UEM静态资源目录
+		// 12、无条件创建UEM静态资源目录
 		SshUtil.execCommand(conn, Create_Uem_Folder);
-		// 12、推送UEM脚本到容器
+		// 13、推送UEM脚本到容器
 		SshUtil.execCommand(conn, Push_Uem_Err);
-		// 13、推送JS_ERR脚本到容器
+		// 14、推送JS_ERR脚本到容器
 		SshUtil.execCommand(conn, Push_Js_Err);
-		// 14、推送Json2脚本到容器
+		// 15、推送Json2脚本到容器
 		SshUtil.execCommand(conn, Push_Json2);
-		// 15、推送4xx.zip到容器
+		// 16、推送4xx.zip到容器
 		SshUtil.execCommand(conn, Push_4xx);
-		// 16、解压缩4xx.zip
+		// 17、解压缩4xx.zip
 		SshUtil.execCommand(conn, Unzip_4xx);
-		// 17、设置属性755
+		// 18、设置属性755
 		SshUtil.execCommand(conn, Chmod_Uem);
-		// 18、验证Nginx配置
+		// 19、验证Nginx配置
 		SshUtil.execCommand(conn, Ngx_Ing_Cnf_Verify);
-		// 19、重新加载Nginx配置
+		// 20、重新加载Nginx配置
 		SshUtil.execCommand(conn, Ngx_Ing_Cnf_Reload);
-		// 20、关闭Connection
+		// 21、关闭Connection
 		conn.close();
 	}
 
