@@ -139,9 +139,9 @@ public class IngressUemUpdate {
 			+ " -- /sbin/nginx -s reload";
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-//		deploy();
+		deploy();
 //		deployNgxConf();
-		deployUEM();
+//		deployUEM();
 //		deploy4xxPages();
 //		deployJSErr();
 	}
