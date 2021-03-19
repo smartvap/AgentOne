@@ -75,10 +75,10 @@ public class IngressUemUpdate {
 			+ "\t\tsub_filter \"debugger;\" \"\";\n"
 			+ "\t\tsub_filter_once off;\n"
 			+ "\t\t\n"
-			+ "\t\t# openchannel policies\n"
-			+ "\t\tlocation /openchannel {\n"
-			+ "\t\t\tproxy_pass http://192.195.250.56/openchannel;\n"
-			+ "\t\t}\n"
+//			+ "\t\t# openchannel policies\n"
+//			+ "\t\tlocation /openchannel {\n"
+//			+ "\t\t\tproxy_pass http://192.195.250.56/openchannel;\n"
+//			+ "\t\t}\n"
 			+ "\t\t\n"
 			+ "\t\t##########################\n"
 			+ "\t\t# UEM 1.5 Configurations #\n"
@@ -139,9 +139,9 @@ public class IngressUemUpdate {
 			+ " -- /sbin/nginx -s reload";
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		deploy();
+//		deploy();
 //		deployNgxConf();
-//		deployUEM();
+		deployUEM();
 //		deploy4xxPages();
 //		deployJSErr();
 	}
@@ -156,7 +156,7 @@ public class IngressUemUpdate {
 		// 4、检查UEM标志，若不存在，需要做配置合并
 		if (sNgxCnf.indexOf(Mrk_Ngx_Uem) == -1) {
 			// 找到第一个业务Location上端最近的换行符处为最佳写入位置
-			int pos = sNgxCnf.substring(0, sNgxCnf.indexOf("location /systemAdminMgr {")).lastIndexOf("\n");
+			int pos = sNgxCnf.substring(0, sNgxCnf.indexOf("location /task-common-gate {")).lastIndexOf("\n");
 			// 合并配置文件
 			merge(Ngx_Ing_Conf_Full_Path, pos, Ngx_Uem_Cnf);
 		}
